@@ -15,7 +15,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 // === AUTH ROUTES ===
-Route::get('/', fn() => redirect()->route('login'));
+Route::get('/', function () {
+    if (auth()->check()) {
+        return auth()->user()->isAdmin()
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('scanner');
+    }
+    return redirect()->route('login');
+});
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
