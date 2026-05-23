@@ -12,7 +12,4 @@ use Illuminate\Support\Facades\Route;
 | CSRF yang sama dengan web routes.
 */
 
-Route::middleware(['auth:web'])->group(function () {
-    // POST /api/scan — proses QR token dari scanner petugas
-    Route::post('/scan', [JimpitanController::class, 'scan'])->name('api.scan');
-});
+// Moved session-based /api/scan route to routes/web.php to properly start sessions and validate CSRF tokens.

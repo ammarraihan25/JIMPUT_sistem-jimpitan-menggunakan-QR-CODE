@@ -31,6 +31,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::middleware(['auth'])->group(function () {
     Route::get('/scanner', [JimpitanController::class, 'scanner'])->name('scanner');
     Route::get('/riwayat-hari-ini', [JimpitanController::class, 'riwayatHariIni'])->name('riwayat.hari-ini');
+    Route::post('/api/scan', [JimpitanController::class, 'scan'])->name('api.scan');
 });
 
 // === ADMIN ROUTES ===
