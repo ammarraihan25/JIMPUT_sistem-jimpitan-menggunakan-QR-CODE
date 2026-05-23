@@ -40,10 +40,21 @@ try {
     header("HTTP/1.1 500 Internal Server Error");
     echo "<html><head><title>Laravel Vercel Debugger</title></head><body style='font-family: sans-serif; padding: 30px; background: #fff5f5; color: #9b2c2c;'>";
     echo "<h1 style='border-bottom: 2px solid #feb2b2; padding-bottom: 10px;'>Fatal Boot Error on Vercel</h1>";
-    echo "<p><strong>Error Message:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
-    echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . " (Line " . $e->getLine() . ")</p>";
-    echo "<h3>Stack Trace:</h3>";
-    echo "<pre style='background: #fff; padding: 15px; border: 1px solid #fed7d7; border-radius: 4px; overflow-x: auto;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    
+    $current = $e;
+    $count = 1;
+    while ($current) {
+        echo "<div style='margin-bottom: 20px; padding: 15px; border: 1px solid #feb2b2; background: #fff; border-radius: 4px;'>";
+        echo "<h2>Exception #" . $count . " (" . get_class($current) . ")</h2>";
+        echo "<p><strong>Error Message:</strong> " . htmlspecialchars($current->getMessage()) . "</p>";
+        echo "<p><strong>File:</strong> " . htmlspecialchars($current->getFile()) . " (Line " . $current->getLine() . ")</p>";
+        echo "<h3>Stack Trace:</h3>";
+        echo "<pre style='background: #f7fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 13px;'>" . htmlspecialchars($current->getTraceAsString()) . "</pre>";
+        echo "</div>";
+        $current = $current->getPrevious();
+        $count++;
+    }
+    
     echo "</body></html>";
     exit;
 }
