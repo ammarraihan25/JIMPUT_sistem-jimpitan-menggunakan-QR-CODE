@@ -315,8 +315,15 @@
     html5QrCode = new Html5Qrcode("reader");
 
     const config = {
-        fps: 20,
-        qrbox: { width: 240, height: 240 },
+        fps: 25,
+        qrbox: function(viewfinderWidth, viewfinderHeight) {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.7);
+            return {
+                width: qrboxSize,
+                height: qrboxSize
+            };
+        },
         aspectRatio: 1.0,
         disableFlip: false,
         rememberLastUsedCamera: true,
@@ -340,13 +347,27 @@
             onQrDetected,
             () => {} // ignore non-QR frames silently
         ).catch(err => {
+            console.error("Camera start error:", err);
             document.getElementById('reader').innerHTML =
                 `<div class="text-center py-12 text-slate-400 px-4">
                     <div class="text-4xl mb-3">🚫</div>
-                    <p class="text-sm">Izin kamera ditolak.</p>
+                    <p class="text-sm">Izin kamera ditolak atau terpakai aplikasi lain.</p>
                     <p class="text-xs mt-2 text-slate-500">Aktifkan izin kamera di pengaturan browser.</p>
                  </div>`;
         });
+    }).catch(err => {
+        console.error("Get cameras error:", err);
+        const isSecure = window.location.protocol === 'https:';
+        document.getElementById('reader').innerHTML =
+            `<div class="text-center py-12 text-slate-400 px-4">
+                <div class="text-4xl mb-3">⚠️</div>
+                <p class="text-sm font-bold text-slate-200">${isSecure ? 'Gagal Mengakses Kamera' : 'Wajib Menggunakan HTTPS'}</p>
+                <p class="text-xs mt-2 text-slate-400 leading-relaxed">
+                    ${isSecure 
+                        ? 'Pastikan browser Anda diizinkan untuk mengakses kamera pada perangkat ini.' 
+                        : 'Browser memblokir akses kamera pada koneksi tidak aman (HTTP). Silakan akses website menggunakan HTTPS.'}
+                </p>
+             </div>`;
     });
 
     // ── Tombol Toggle Kamera ──────────────────────────────────────
