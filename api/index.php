@@ -34,12 +34,16 @@ try {
     putenv("APP_ROUTES_CACHE={$bootstrapCachePath}/routes.php");
     putenv("APP_EVENTS_CACHE={$bootstrapCachePath}/events.php");
 
-    // 3. Optimize configurations for serverless environment
+    // 3. Fix Vercel SCRIPT_NAME routing issue (forces Laravel to keep /api prefix in URIs)
+    $_SERVER['SCRIPT_NAME'] = '/index.php';
+    $_SERVER['PHP_SELF'] = '/index.php';
+
+    // 4. Optimize configurations for serverless environment
     putenv("SESSION_DRIVER=cookie"); // Use cookies for stateless serverless sessions
     putenv("LOG_CHANNEL=stderr");    // Send logs to Vercel's logs panel
     putenv("CACHE_STORE=array");     // Use array cache (or file/database if needed)
 
-    // 4. Temporarily enable debug mode to show exact error if DB/App Key is misconfigured
+    // 5. Temporarily enable debug mode to show exact error if DB/App Key is misconfigured
     putenv("APP_DEBUG=true");
 
     // Forward request to the Laravel front controller
