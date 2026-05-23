@@ -8,11 +8,13 @@ error_reporting(E_ALL);
 try {
     // 1. Workaround for Vercel's read-only filesystem
     $storagePath = '/tmp/storage';
+    $bootstrapCachePath = '/tmp/bootstrap/cache';
     $directories = [
         $storagePath . '/framework/views',
         $storagePath . '/framework/cache/data',
         $storagePath . '/framework/sessions',
         $storagePath . '/logs',
+        $bootstrapCachePath,
     ];
 
     foreach ($directories as $directory) {
@@ -24,6 +26,13 @@ try {
     // 2. Set dynamic environment variables for Serverless
     putenv("LARAVEL_STORAGE_PATH={$storagePath}");
     putenv("VIEW_COMPILED_PATH={$storagePath}/framework/views");
+
+    // Redirect Laravel bootstrap cache to writable /tmp directory
+    putenv("APP_SERVICES_CACHE={$bootstrapCachePath}/services.php");
+    putenv("APP_PACKAGES_CACHE={$bootstrapCachePath}/packages.php");
+    putenv("APP_CONFIG_CACHE={$bootstrapCachePath}/config.php");
+    putenv("APP_ROUTES_CACHE={$bootstrapCachePath}/routes.php");
+    putenv("APP_EVENTS_CACHE={$bootstrapCachePath}/events.php");
 
     // 3. Optimize configurations for serverless environment
     putenv("SESSION_DRIVER=cookie"); // Use cookies for stateless serverless sessions
